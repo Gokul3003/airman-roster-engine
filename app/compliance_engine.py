@@ -15,8 +15,8 @@ def validate_operational_compliance(assignments, instructors, aircraft_list, stu
 
     # Lookup dictionaries
     aircraft_lookup = {ac.aircraft_id: ac for ac in aircraft_list}
-    instructor_lookup = {ins.instructor_id: ins for ins in instructors}
-    student_lookup = {stu.student_id: stu for stu in students}
+    # instructor_lookup = {ins.instructor_id: ins for ins in instructors}
+    # student_lookup = {stu.student_id: stu for stu in students}
 
     for assignment in assignments:
 

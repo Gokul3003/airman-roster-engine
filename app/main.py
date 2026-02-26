@@ -1,10 +1,8 @@
 from fastapi import FastAPI, Query
 from app.database import engine, Base, SessionLocal
-from app import models
 from app.ingestion import run_ingestion
 from app.weather_rules import evaluate_weather
 from app.weather import get_weather
-from app.roster_engine import generate_weekly_roster
 from app.roster_engine import generate_weekly_roster
 from app.dispatch_validator import validate_dispatch
 
@@ -30,7 +28,7 @@ def test_dispatch():
     weather = get_weather("VOBG", "09:30", "12:00")
     result = evaluate_weather("BASIC", "CIRCUITS", weather)
 
-    decision = evaluate_weather(stage= "BASIC", sortie_type="CIRCUITS", weather_data=weather)
+    # decision = evaluate_weather(stage= "BASIC", sortie_type="CIRCUITS", weather_data=weather)
     return {
         "weather": weather,
         "decision": result

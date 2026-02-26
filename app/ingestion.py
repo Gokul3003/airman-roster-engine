@@ -146,13 +146,13 @@ def run_ingestion():
             else:
                 changed_fields = {}
 
-                for key, value in slot.items():
+                for key, value in time_slot.items():
                     if getattr(existing, key) != value:
                         setattr(existing, key, value)
                         changed_fields[key] = "updated"
 
                 if changed_fields:
-                    slot_diffs[slot["slot_id"]] = changed_fields
+                    slot_diffs[time_slot["slot_id"]] = changed_fields
                     updated += 1
 
         diffs["time_slots"] = slot_diffs
