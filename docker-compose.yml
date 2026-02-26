@@ -9,7 +9,7 @@ services:
     depends_on:
       - db
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/airman
+      DATABASE_URL: postgresql://postgres:admin@db:5432/airman
 
   db:
     image: postgres:15
@@ -17,7 +17,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: admin
       POSTGRES_DB: airman
     ports:
       - "5432:5432"
