@@ -24,11 +24,9 @@ jobs:
           --health-retries=5
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: "3.10"
 
@@ -40,13 +38,15 @@ jobs:
       - name: Lint Check
         run: flake8 app
 
+      - name: Wait for Postgres
+        run: sleep 10
+
       - name: Start API
         env:
-          DATABASE_URL: postgresql://postgres:admin@postgres:5432/airman
+          DATABASE_URL: postgresql://postgres:admin@localhost:5432/airman
         run: |
-          uvicorn app.main:app --host 0.0.0.0 --port 8000 &
-          sleep 5
-          curl http://127.0.0.1:8000 || true
+          uvicorn app.main:app --host 127.0.0.1 --port 8000 &
+          sleep 15
 
       - name: Eval Smoke Test
         run: curl -X POST http://127.0.0.1:8000/eval/run
