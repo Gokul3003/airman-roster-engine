@@ -1,0 +1,13 @@
+[
+  {
+    "simulator_id": "SIM01",
+    "type": "C172_SIM",
+    "max_sessions_per_day": 6,
+    "availability": [
+      {"day": "monday", "slot_id": "S1"},
+      {"day": "monday", "slot_id": "S2"},
+      {"day": "monday", "slot_id": "S3"},
+      {"day": "monday", "slot_id": "S4"}
+    ]
+  }
+]

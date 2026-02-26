@@ -1,0 +1,36 @@
+[
+  {
+    "instructor_id": "I001",
+    "name": "Capt. Rao",
+    "ratings": ["CIRCUITS", "NAV"],
+    "currency": true,
+    "max_duty_hours_per_day": 8,
+    "sim_instructor": true,
+    "availability": [
+      {"day": "monday", "slot_id": "S1"},
+      {"day": "monday", "slot_id": "S2"},
+      {"day": "monday", "slot_id": "S3"},
+      {"day": "monday", "slot_id": "S4"},
+      {"day": "tuesday", "slot_id": "S1"},
+      {"day": "tuesday", "slot_id": "S2"},
+      {"day": "tuesday", "slot_id": "S3"},
+      {"day": "tuesday", "slot_id": "S4"}
+    ]
+  },
+  {
+    "instructor_id": "I002",
+    "name": "Capt. Menon",
+    "ratings": ["SOLO", "CHK_PREP", "NAV"],
+    "currency": true,
+    "max_duty_hours_per_day": 6,
+    "sim_instructor": false,
+    "availability": [
+      {"day": "monday", "slot_id": "S1"},
+      {"day": "monday", "slot_id": "S2"},
+      {"day": "wednesday", "slot_id": "S1"},
+      {"day": "wednesday", "slot_id": "S2"},
+      {"day": "thursday", "slot_id": "S1"},
+      {"day": "thursday", "slot_id": "S2"}
+    ]
+  }
+]

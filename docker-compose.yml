@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: airman_api
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/airman
+
+  db:
+    image: postgres:15
+    container_name: airman_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: airman
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    container_name: airman_redis
+    ports:
+      - "6379:6379"

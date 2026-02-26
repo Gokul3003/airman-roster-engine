@@ -1,0 +1,6 @@
+[
+  {"slot_id": "S1", "label": "Early Morning", "start": "07:00", "end": "09:30", "duration_hours": 2.5},
+  {"slot_id": "S2", "label": "Morning",       "start": "09:30", "end": "12:00", "duration_hours": 2.5},
+  {"slot_id": "S3", "label": "Midday",        "start": "12:00", "end": "14:30", "duration_hours": 2.5},
+  {"slot_id": "S4", "label": "Afternoon",     "start": "14:30", "end": "17:00", "duration_hours": 2.5}
+]

@@ -1,0 +1,19 @@
+[
+  {
+    "aircraft_id": "AC01",
+    "type": "C172",
+    "maintenance_status": "serviceable",
+    "availability": [
+      {"day": "monday", "slot_id": "S1"},
+      {"day": "monday", "slot_id": "S2"},
+      {"day": "monday", "slot_id": "S3"},
+      {"day": "monday", "slot_id": "S4"}
+    ]
+  },
+  {
+    "aircraft_id": "AC02",
+    "type": "C172",
+    "maintenance_status": "maintenance",
+    "availability": []
+  }
+]

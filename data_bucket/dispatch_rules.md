@@ -1,0 +1,5 @@
+- No student, instructor, aircraft, or simulator can be double-booked.
+- Instructor must hold rating for assigned sortie type.
+- Max instructor duty hours per day must not exceed max_duty_hours_per_day.
+- Solo sorties allowed only if solo_eligible = true.
+- Aircraft under maintenance cannot be scheduled.
