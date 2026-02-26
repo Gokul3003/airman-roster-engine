@@ -1,15 +1,23 @@
 version: "3.9"
 
 services:
-  api:
+
+  airman_api:
     build: .
     container_name: airman_api
-    ports:
-      - "8000:8000"
+    restart: always
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
     environment:
       DATABASE_URL: postgresql://postgres:admin@db:5432/airman
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    networks:
+      - airman_network
 
   db:
     image: postgres:15
@@ -21,9 +29,28 @@ services:
       POSTGRES_DB: airman
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - airman_network
 
   redis:
     image: redis:7
     container_name: airman_redis
+    restart: always
     ports:
       - "6379:6379"
+    networks:
+      - airman_network
+
+volumes:
+  postgres_data:
+
+networks:
+  airman_network:
+    driver: bridge

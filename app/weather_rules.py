@@ -1,67 +1,64 @@
-import re
 import os
+import re
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RULES_FILE_PATH = os.path.join(BASE_DIR, "data_bucket", "weather_minima.md")
 
-def parse_weather_rules():
+# -------------------------------------------------
+# 1️⃣ Load Markdown File (Knowledge Source)
+# -------------------------------------------------
+
+RULE_FILE_PATH = os.path.join(
+    os.path.dirname(__file__),
+    "..",
+    "data_bucket",
+    "weather_minima.md"
+)
+
+
+def parse_markdown_rules():
+
+    with open(RULE_FILE_PATH, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    sections = re.split(r"### ", content)[1:]
+
     rules = {}
-    current_key = None
 
-    with open(RULES_FILE_PATH, "r", encoding="utf-8") as f:
-        lines = f.readlines()
+    for section in sections:
+        lines = section.strip().split("\n")
+        header = lines[0].strip()  # e.g. BASIC - CIRCUITS
 
-    for line in lines:
-        line = line.strip()
+        ceiling_match = re.search(r"Ceiling >= (\d+)", section)
+        visibility_match = re.search(r"Visibility >= (\d+)", section)
 
-        # Detect rule header
-        if line.startswith("###"):
-            header = line.replace("###", "").strip()
+        if ceiling_match and visibility_match:
+            key = header.replace(" - ", "_").replace(" ", "_").upper()
 
-            # Examples:
-            # BASIC - CIRCUITS
-            # ADVANCED - NAV
-            # SOLO
-            # CHECKRIDE - CHK_PREP
-
-            if "-" in header:
-                stage, sortie = [x.strip() for x in header.split("-")]
-            else:
-                stage = header.strip()
-                sortie = None
-
-            current_key = f"{stage}_{sortie}" if sortie else stage
-
-            rules[current_key] = {
-                "stage": stage.upper(),
-                "sortie": sortie.upper() if sortie else None,
-                "min_ceiling": None,
-                "min_visibility": None
+            rules[key] = {
+                "min_ceiling": int(ceiling_match.group(1)),
+                "min_visibility": int(visibility_match.group(1))
             }
-
-            continue
-
-        if current_key:
-            if "Ceiling" in line:
-                value = int(re.findall(r"\d+", line)[0])
-                rules[current_key]["min_ceiling"] = value
-
-            if "Visibility" in line:
-                value = int(re.findall(r"\d+", line)[0])
-                rules[current_key]["min_visibility"] = value
 
     return rules
 
-# Load rules once at startup
-PARSED_RULES = parse_weather_rules()
+
+# -------------------------------------------------
+# 2️⃣ Parse Once (Global Cache)
+# -------------------------------------------------
+
+PARSED_RULES = parse_markdown_rules()
+
+
+# -------------------------------------------------
+# 3️⃣ Evaluate Weather (RAG-Grounded)
+# -------------------------------------------------
 
 def evaluate_weather(stage, sortie_type, weather_data):
 
-    # Weather unavailable
-    if weather_data["confidence"] == "LOW":
+    if weather_data.get("confidence") == "LOW":
         return {
             "dispatch_decision": "NEEDS_REVIEW",
-            "rule_chunk": "WEATHER_UNAVAILABLE"
+            "rule_chunk": "WEATHER_UNAVAILABLE",
+            "citation": "rules:weather_minima#WEATHER_UNAVAILABLE"
         }
 
     stage = stage.upper()
@@ -69,34 +66,46 @@ def evaluate_weather(stage, sortie_type, weather_data):
 
     key = f"{stage}_{sortie_type}"
 
-    # SOLO special case (if exists)
+    rule = None
+    rule_key = None
+
     if sortie_type == "SOLO" and "SOLO" in PARSED_RULES:
         rule = PARSED_RULES["SOLO"]
         rule_key = "SOLO"
+
     elif key in PARSED_RULES:
         rule = PARSED_RULES[key]
         rule_key = key
-    else:
+
+    if not rule:
         return {
             "dispatch_decision": "NEEDS_REVIEW",
-            "rule_chunk": "UNKNOWN_RULE"
+            "rule_chunk": "UNKNOWN_RULE",
+            "citation": "rules:weather_minima#UNKNOWN_RULE"
         }
 
-    # Ceiling check
-    if weather_data["ceiling"] < rule["min_ceiling"]:
+    min_ceiling = rule["min_ceiling"]
+    min_visibility = rule["min_visibility"]
+
+    ceiling = weather_data.get("ceiling")
+    visibility = weather_data.get("visibility")
+
+    if ceiling < min_ceiling:
         return {
             "dispatch_decision": "NO_GO",
-            "rule_chunk": rule_key
+            "rule_chunk": rule_key,
+            "citation": f"rules:weather_minima#{rule_key}"
         }
 
-    # Visibility check
-    if weather_data["visibility"] < rule["min_visibility"]:
+    if visibility < min_visibility:
         return {
             "dispatch_decision": "NO_GO",
-            "rule_chunk": rule_key
+            "rule_chunk": rule_key,
+            "citation": f"rules:weather_minima#{rule_key}"
         }
 
     return {
         "dispatch_decision": "GO",
-        "rule_chunk": rule_key
+        "rule_chunk": rule_key,
+        "citation": f"rules:weather_minima#{rule_key}"
     }
