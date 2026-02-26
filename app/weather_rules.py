@@ -1,5 +1,4 @@
 import re,os
-from datetime import datetime, timedelta
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RULES_FILE_PATH = os.path.join(BASE_DIR, "data_bucket", "weather_minima.md")
