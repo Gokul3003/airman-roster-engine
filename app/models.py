@@ -1,4 +1,5 @@
-from sqlalchemy import Column, String, Boolean, Integer,JSON,Float,DateTime
+from sqlalchemy import Column, String, Boolean, Integer,JSON,Float,DateTime,func
+from sqlalchemy.dialects.postgresql import JSONB
 from app.database import Base
 from datetime import datetime
 
@@ -66,3 +67,16 @@ class IngestionRun(Base):
     inserted_count = Column(Integer, default=0)
     updated_count = Column(Integer, default=0)
     diff_summary = Column(JSON)
+
+
+class RosterVersion(Base):
+    __tablename__ = "roster_versions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    correlation_id = Column(String, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    roster_snapshot = Column(JSONB)
+    diff_json = Column(JSONB)
+    churn = Column(Float)
+    violation_count = Column(Integer)
+

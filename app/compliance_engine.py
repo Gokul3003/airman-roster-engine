@@ -49,12 +49,22 @@ def validate_operational_compliance(assignments, instructors, aircraft_list, stu
 
             aircraft_total_slots[aircraft_id] += 1
 
-            if aircraft_lookup[aircraft_id].maintenance_status != "serviceable":
-                violations.append({
-                    "type": "AIRCRAFT_NOT_SERVICEABLE",
-                    "details": f"{aircraft_id} assigned under maintenance",
-                    "severity": "CRITICAL"
-                })
+            # Only validate aircraft maintenance for FLIGHT activity
+            if activity == "FLIGHT" and aircraft_id:
+
+                if aircraft_id not in aircraft_lookup:
+                    violations.append({
+                        "type": "INVALID_AIRCRAFT",
+                        "aircraft_id": aircraft_id,
+                        "severity": "CRITICAL"
+                    })
+
+                elif aircraft_lookup[aircraft_id].maintenance_status != "serviceable":
+                    violations.append({
+                        "type": "AIRCRAFT_UNSERVICEABLE",
+                        "aircraft_id": aircraft_id,
+                        "severity": "CRITICAL"
+                    })
 
     # Instructor duty limit validation
     for instructor in instructors:

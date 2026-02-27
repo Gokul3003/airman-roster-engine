@@ -25,7 +25,10 @@ def generate_weekly_roster():
 
     week_start = datetime.utcnow().date()
 
-    # Tracking
+    # ----------------------------
+    # TRACKING STRUCTURES
+    # ----------------------------
+
     student_weekly_count = {s.student_id: 0 for s in students}
     student_daily_count = defaultdict(lambda: defaultdict(int))
 
@@ -35,8 +38,9 @@ def generate_weekly_roster():
     aircraft_slot_bookings = set()
     simulator_slot_bookings = set()
 
-    # Pre-build empty week structure
     roster_output = []
+
+    # Build empty 7-day structure
     for day_index in range(7):
         roster_output.append({
             "date": str(week_start + timedelta(days=day_index)),
@@ -45,7 +49,10 @@ def generate_weekly_roster():
 
     compliance_assignments = []
 
-    # 🔥 STUDENT-CENTRIC LOOP (Correct Distribution)
+    # ------------------------------------
+    # STUDENT-CENTRIC PRIORITY LOOP
+    # ------------------------------------
+
     for student in sorted(students, key=lambda s: s.priority):
 
         sorties_needed = student.required_sorties_per_week
@@ -60,11 +67,11 @@ def generate_weekly_roster():
                 if sorties_needed <= 0:
                     break
 
-                # Daily cap: max 1 per day
+                # Daily cap (max 1 per day)
                 if student_daily_count[student.student_id][day] >= 1:
                     continue
 
-                # Availability check
+                # Student availability
                 if not any(
                     entry["day"].lower() == day and entry["slot_id"] == slot.slot_id
                     for entry in student.availability
@@ -77,11 +84,12 @@ def generate_weekly_roster():
                     else "CIRCUITS"
                 )
 
-                # SOLO eligibility
+                # SOLO eligibility enforcement
                 if sortie_type == "SOLO" and not student.solo_eligible:
                     continue
 
-                # Instructor assignment
+                # ---------------- Instructor ----------------
+
                 instructor = assign_instructor(
                     instructors,
                     student,
@@ -95,7 +103,8 @@ def generate_weekly_roster():
                 if not instructor:
                     continue
 
-                # Aircraft assignment
+                # ---------------- Aircraft ----------------
+
                 aircraft = assign_aircraft(
                     aircraft_list,
                     day,
@@ -107,19 +116,26 @@ def generate_weekly_roster():
                 if not aircraft:
                     continue
 
-                # Weather evaluation
-                weather = get_weather("VOBG", slot.start, slot.end)
-                decision = evaluate_weather(student.stage, sortie_type, weather)
+                # ---------------- Weather ----------------
 
+                weather = get_weather("VOBG", slot.start, slot.end)
+
+                decision = evaluate_weather(
+                    student.stage,
+                    sortie_type,
+                    weather
+                )
+
+                dispatch_decision = decision["dispatch_decision"]
                 activity = "FLIGHT"
-                dispatch_decision = "GO"
                 resource_id = aircraft.aircraft_id
                 reasons = ["NORMAL_OPERATION"]
 
-                # SIM substitution if weather NO_GO
-                if decision["dispatch_decision"] == "NO_GO":
+                # SIM substitution under NO_GO
+                if dispatch_decision == "NO_GO":
 
                     sim_assigned = None
+
                     for sim in simulators:
                         if any(
                             entry["day"].lower() == day and entry["slot_id"] == slot.slot_id
@@ -137,10 +153,12 @@ def generate_weekly_roster():
                         )
                         reasons = ["WX_BELOW_MINIMA", "SIM_SUBSTITUTION"]
                     else:
-                        continue  # skip if no simulator
+                        # No SIM available → skip
+                        continue
 
                 assignment = {
                     "slot_id": slot.slot_id,
+                    "date": roster_output[day_index]["date"],   # 🔥 important for reallocation
                     "start": slot.start,
                     "end": slot.end,
                     "activity": activity,
@@ -148,6 +166,7 @@ def generate_weekly_roster():
                     "instructor_id": instructor.instructor_id,
                     "resource_id": resource_id,
                     "sortie_type": sortie_type,
+                    "stage": student.stage,  # 🔥 needed for weather re-evaluation
                     "dispatch_decision": dispatch_decision,
                     "reasons": reasons,
                     "citations": [
@@ -172,7 +191,11 @@ def generate_weekly_roster():
                 student_daily_count[student.student_id][day] += 1
                 sorties_needed -= 1
 
-                break  # move to next day after assignment
+                break  # Move to next day
+
+    # ------------------------------------
+    # Compliance Validation
+    # ------------------------------------
 
     compliance_report = validate_operational_compliance(
         compliance_assignments,

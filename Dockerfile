@@ -2,9 +2,14 @@ FROM python:3.10
 
 WORKDIR /app
 
-COPY . .
+# Copy requirements first (important for caching)
+COPY requirements.txt .
 
-RUN pip install --no-cache-dir fastapi uvicorn sqlalchemy psycopg2-binary
+# Install all dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy project files
+COPY . .
 
 EXPOSE 8000
 
