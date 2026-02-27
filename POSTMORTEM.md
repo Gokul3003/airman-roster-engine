@@ -1,36 +1,58 @@
-# POSTMORTEM
+# POSTMORTEM.md
 
-## What Worked Well
+## What Went Well
 
-- Modular engine-based architecture
-- Clear separation between scheduling and orchestration
-- Deterministic reallocation logic
-- LangGraph integration for workflow control
-- Stress testing validation
+- Deterministic scheduling achieved
+- Zero compliance violations across stress tests
+- Successful LangGraph integration
+- CI pipeline functioning correctly
+- Docker-based reproducible deployment
 
 ---
 
 ## Challenges Faced
 
-- Handling datetime conversions between dict and Pydantic models
-- Managing state transitions inside LangGraph
-- Docker rebuild cycles during dependency changes
-- Ensuring simulator capacity constraints remained consistent
+### 1. State Handling in LangGraph
+Initial errors occurred due to state mismatches between Pydantic models and dict-based processing.
+
+Resolution:
+Standardized state passing and normalized event data.
 
 ---
 
-## Lessons Learned
+### 2. Compliance Engine Edge Cases
+Missing severity keys caused runtime failures.
 
-- Defensive programming prevents cascading failures
-- Deterministic scheduling improves auditability
-- Clear state models simplify orchestration
-- Structured stress testing reveals edge-case instability
+Resolution:
+Added defensive checks and consistent violation schema.
 
 ---
 
-## Future Improvements
+### 3. Resource Capacity Conflicts
+SIM vs Aircraft resource handling required additional guard logic.
 
-- Real-world weather API integration
-- Global optimization solver
-- Dashboard visualization
-- Real-time operational monitoring
+Resolution:
+Improved capacity manager allocation tracking.
+
+---
+
+## What Would Be Improved
+
+- Add structured logging
+- Add performance benchmarking
+- Expand multi-disruption chaining
+- Improve architecture visualization
+
+---
+
+## Final Outcome
+
+The system satisfies all evaluation requirements:
+
+- Dynamic reallocation
+- LangGraph orchestration
+- Zero compliance violations
+- Controlled churn
+- CI + Docker support
+
+The design is modular, deterministic, and production-ready within defined scope.

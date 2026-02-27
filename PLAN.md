@@ -1,46 +1,55 @@
-# PLAN
+# PLAN.md
 
-## Objective
+## Project Objective
 
-Design and implement a constraint-aware flight dispatch system capable of dynamic reallocation under operational disruptions.
+Design and implement a constraint-aware AI dispatch and reallocation system capable of:
+
+- Generating deterministic weekly training rosters
+- Handling operational disruptions
+- Maintaining zero compliance violations
+- Minimizing schedule churn
 
 ---
 
 ## Phase 1 – Core Scheduling Engine
 
-- JSON data ingestion into PostgreSQL
-- Weekly roster generation
-- Instructor allocation logic
-- Aircraft allocation logic
-- Weather minima evaluation
-- Basic compliance validation
+- Implement data ingestion module
+- Build deterministic roster generator
+- Enforce instructor, aircraft, and student constraints
+- Validate operational compliance
 
 ---
 
-## Phase 2 – Dynamic Reallocation
+## Phase 2 – Reallocation Engine
 
-- Weather disruption handling
-- Aircraft failure handling
-- Instructor unavailability handling
-- Simulator substitution logic
-- Capacity manager
-- Cost-aware churn minimization
-
----
-
-## Phase 3 – Orchestration & Evaluation
-
-- LangGraph orchestration layer
-- Structured state transitions
-- Stress testing harness
-- Compliance reporting
-- Version tracking
+- Handle weather disruptions
+- Handle aircraft failures
+- Handle instructor unavailability
+- Minimize churn during rescheduling
+- Preserve compliance guarantees
 
 ---
 
-## Success Criteria
+## Phase 3 – Orchestration Layer
 
-- Zero compliance violations
-- Controlled churn under disruption
-- Deterministic and auditable scheduling
-- Fully Dockerized reproducible system
+- Integrate LangGraph for workflow orchestration
+- Create structured disruption pipeline
+- Add explanation generation
+
+---
+
+## Phase 4 – Evaluation Harness
+
+- Simulate stress scenarios
+- Measure churn
+- Track compliance violations
+- Generate evaluation summary
+
+---
+
+## Phase 5 – Productionization
+
+- Dockerize API + DB + Redis
+- Add CI pipeline
+- Add documentation
+- Prepare demo video
