@@ -1,6 +1,6 @@
 # app/optimization_engine.py
 
-import copy
+# import copy
 
 
 # ----------------------------------------

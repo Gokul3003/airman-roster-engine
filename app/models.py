@@ -79,4 +79,3 @@ class RosterVersion(Base):
     diff_json = Column(JSONB)
     churn = Column(Float)
     violation_count = Column(Integer)
-
